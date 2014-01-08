@@ -1,0 +1,82 @@
+<project name="Project Build" default="runtest" basedir=".">
+
+  <property environment="env"/>
+
+  <!--  ==================== Compilation Control Options ==================== -->
+  <property name="compile.debug"       value="true"/>
+  <property name="compile.deprecation" value="true"/>
+  <property name="compile.optimize"    value="true"/>
+  <property name="compile.verbose"     value="false"/>
+
+  <!-- ==================== File and Directory Names ======================== -->
+  <property name="hb.dev"     value="${basedir}"/>
+  <property name="hb.build"   value="${basedir}/build"/>
+  <property name="hb.srcbase" value="${hb.dev}/src/java"/>
+  <property name="hb.testbase" value="${hb.dev}/src/test"/>
+  <property name="hb.lib"     value="${hb.build}/lib"/>
+  <property name="hb.classes" value="${hb.build}/lib/classes"/>
+  <property name="hb.testclasses" value="${hb.build}/lib/testclasses"/>
+  <property name="hb.jar"     value="${hb.lib}/hb.jar"/>
+
+  <target name="clean">
+    <delete dir="${hb.build}"/>
+  </target>
+
+  <path id="compile.classpath">
+    <fileset dir="${basedir}/libs">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="build">
+    <mkdir dir="${hb.classes}"/>
+    <javac srcdir="${hb.srcbase}"
+           destdir="${hb.classes}"
+           debug="${compile.debug}"
+           deprecation="${compile.deprecation}"
+           optimize="${compile.optimize}"
+           verbose="${compile.verbose}">
+      <classpath refid="compile.classpath"/>
+      <exclude name="**/.~*"/>
+    </javac>
+    <mkdir dir="${hb.lib}"/>
+    <jar jarfile="${hb.jar}" basedir="${hb.classes}"/>
+  </target>
+
+  <target name="buildtest" depends="build">
+    <mkdir dir="${hb.testclasses}"/>
+    <javac      srcdir="${hb.testbase}"
+               destdir="${hb.testclasses}"
+                 debug="${compile.debug}"
+           deprecation="${compile.deprecation}"
+              optimize="${compile.optimize}"
+  	     verbose="${compile.verbose}">
+      <classpath refid="compile.classpath"/>
+      <classpath path="${hb.classes}"/>
+      <classpath>
+        <fileset dir="test/lib">
+          <include name="junit*.jar"/>
+        </fileset>
+      </classpath>
+      <exclude name="**/.~*"/>
+    </javac>
+  </target>
+  
+  <target name="runtest" depends="buildtest">
+      <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+      <batchtest fork="yes">
+        <fileset dir="${hb.testbase}"/>
+      </batchtest>
+      <formatter type="plain" usefile="false" />
+      <classpath refid="compile.classpath"/>
+      <classpath path="${hb.classes}"/>
+      <classpath path="${hb.testclasses}"/>
+      <classpath>
+        <fileset dir="test/lib">
+          <include name="junit*.jar"/>
+        </fileset>
+      </classpath>
+    </junit> 
+  </target>
+
+</project>
