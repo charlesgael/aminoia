@@ -48,11 +48,11 @@ public class Board {
 		double radius = me.getRadius();
 		double eval = radius;
 		
-		for ( Mote mote : others ) {
+		/*for ( Mote mote : others ) {
 			if ((mote.getRadius() + radius) * 2 > me.getDistance(mote)
 					&& radius < mote.getRadius())
 				eval *= 0.2;
-		}
+		}*/
 		
 		return eval;
 	}
@@ -102,46 +102,47 @@ public class Board {
 	}
 	
     public void update(Mote m) {
+    	// Compute of the new position with speed
         PointD new_position = new PointD( m.getPosition().x + m.getSpeed().x, m.getPosition().y + m.getSpeed().y );
-        // elastic bounce on terrain boundaries
-        if ( new_position.x < m.getRadius() ) {
-            new_position.x += ( m.getRadius() - new_position.x ) * 2;
+        double mradius = m.getRadius();
+        
+        // Elastic bounce on terrain boundaries
+        if ( new_position.x < mradius ) {
+            new_position.x += ( mradius - new_position.x ) * 2;
             m.getSpeed().x *= -1;
-        } else if ( new_position.x > Game.getTerrainMap().getMax().x - m.getRadius() ) {
-            new_position.x -= ( new_position.x - ( Game.getTerrainMap().getMax().x - m.getRadius() ) ) * 2;
+        } else if ( new_position.x > Game.getTerrainMap().getMax().x - mradius ) {
+            new_position.x -= ( new_position.x - ( Game.getTerrainMap().getMax().x - mradius ) ) * 2;
             m.getSpeed().x *= -1;
         }
-        if ( new_position.y < m.getRadius() ) {
-            new_position.y += ( m.getRadius() - new_position.y ) * 2;
+        if ( new_position.y < mradius ) {
+            new_position.y += ( mradius - new_position.y ) * 2;
             m.getSpeed().y *= -1;
-        } else if ( new_position.y > Game.getTerrainMap().getMax().y - m.getRadius() ) {
-            new_position.y -= ( new_position.y - ( Game.getTerrainMap().getMax().y - m.getRadius() ) ) * 2;
+        } else if ( new_position.y > Game.getTerrainMap().getMax().y - mradius ) {
+            new_position.y -= ( new_position.y - ( Game.getTerrainMap().getMax().y - mradius ) ) * 2;
             m.getSpeed().y *= -1;
         }
         if ( ! m.getPosition().equals( new_position ) ) {
             m.setPosition(new_position);
         }
-        // eat or get eaten
+        // Eat or get eaten
         for ( Mote mote : getMotes() ) {
-            if ( mote == m || (mote.getRadius() + m.getRadius()) * 1.5 < m.getDistance(mote)) {
-                continue;
-            }
-            double distance = m.getDistance( mote );
-            if ( distance < m.getRadius() + mote.getRadius() ) {
+        	// Distance
+        	double distance = m.getDistance( mote );
+            if ( distance < mradius + mote.getRadius() ) {
                 // simple quadratic equation solving transfer of surface from smaller to larger and point opposite to contact not changing 
-                double foo = ( m.getRadius() + mote.getRadius() + distance ) / 2;
+                double foo = ( mradius + mote.getRadius() + distance ) / 2;
                 double a = 2;
                 double b = - 2 * foo;
-                double c = Util.sqr( foo ) - Util.sqr( m.getRadius() ) - Util.sqr( mote.getRadius() );
+                double c = Util.sqr( foo ) - Util.sqr( mradius ) - Util.sqr( mote.getRadius() );
                 double new_radius = ( - b + Math.sqrt( Util.sqr( b ) - 4 * a * c ) ) / ( 2 * a );
                 double other_new_radius = foo - new_radius;
                 double new_radius_larger = Util.maxd( new_radius, other_new_radius );
                 double new_radius_smaller = Util.mind( new_radius, other_new_radius );
                 if ( new_radius_smaller <= 0 ) {
-                    new_radius_larger = Math.sqrt( Util.sqr( m.getRadius() ) + Util.sqr( mote.getRadius() ) );
+                    new_radius_larger = Math.sqrt( Util.sqr( mradius ) + Util.sqr( mote.getRadius() ) );
                     new_radius_smaller = 0;
                 }
-                if ( m.getRadius() > mote.getRadius() ) {
+                if ( mradius > mote.getRadius() ) {
                     // eat
                     eat( m, mote, new_radius_larger, new_radius_smaller );
                 } else {

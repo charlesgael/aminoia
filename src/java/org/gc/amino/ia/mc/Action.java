@@ -50,19 +50,19 @@ public enum Action {
 		case NORTH:
 			return new PointD(0, 100);
 		case NORTH_EAST:
-			return new PointD(-100, 100);
+			return new PointD(-50, 50);
 		case EAST:
 			return new PointD(-100, 0);
 		case SOUTH_EAST:
-			return new PointD(-100, -100);
+			return new PointD(-50, -50);
 		case SOUTH:
 			return new PointD(0, -100);
 		case SOUTH_WEST:
-			return new PointD(100, -100);
+			return new PointD(50, -50);
 		case WEST:
 			return new PointD(100, 0);
 		case NORTH_WEST:
-			return new PointD(100, 100);
+			return new PointD(50, 50);
 		}
 		return null;
 	}
@@ -70,7 +70,9 @@ public enum Action {
 	public PointD fastPoint(Mote me) {
 		PointD pos = me.getPosition();
 		PointD add = go();
-		if (go() != null) {
+		PointD speed = me.getSpeed();
+		
+		if (add != null) {
 			pos.set(pos.x + add.x, pos.y + add.y);
 			return pos;
 		}
@@ -78,29 +80,22 @@ public enum Action {
 	}
 		
 	public PointD point(Mote me) {
+		PointD pos = me.getPosition();
 		PointD speed = me.getSpeed();
+		PointD will = go();
+		
+		if (will == null) return null;
 		
 		double x = 0, y = 0;
 		
-		if (speed.y > 0 && (this == NORTH || this == NORTH_EAST || this == NORTH_WEST)) {
-			y = (Math.abs(speed.y) / (Math.abs(speed.x) + Math.abs(speed.y)) * 100);
-		}
-		else if (speed.y < 0 && (this == SOUTH || this == SOUTH_EAST || this == SOUTH_WEST)) {
-			y = - (Math.abs(speed.y) / (Math.abs(speed.x) + Math.abs(speed.y)) * 100);
-		}
+		x = speed.x - will.x;
+		y = speed.y - will.y;
 		
-		if (speed.x < 0 && (this == EAST || this == NORTH_EAST || this == SOUTH_EAST)) {
-			x = - (Math.abs(speed.y) / (Math.abs(speed.x) + Math.abs(speed.y)) * 100);
-		}
-		else if (speed.x > 0 && (this == WEST || this == NORTH_WEST || this == SOUTH_WEST)) {
-			x = (Math.abs(speed.y) / (Math.abs(speed.x) + Math.abs(speed.y)) * 100);
-		}
-		
-		if (x == 0 && y == 0) {
+		if (Math.abs(x) < 0.05) {
 			return null;
 		}
 		
-		return new PointD(x, y);
+		return new PointD(pos.x + x*10, pos.y + y*10);
 	}
 	
 	public String toString() {
@@ -125,6 +120,15 @@ public enum Action {
 			return "NORTH_WEST";
 		}
 		return null;
+	}
+
+	public boolean isOpposite(Action action) {
+		if (this == NOTHING)
+			return false;
+		
+		return (((val-1)+4)%8)+1 == action.val
+				|| (((val-1)+3)%8)+1 == action.val
+				|| (((val-1)+5)%8)+1 == action.val;
 	}
 
 }

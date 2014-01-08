@@ -8,6 +8,7 @@ public class Simulation extends Thread {
 	private Random random;
 	
 	public Simulation(Board b, SearchNode l, Random r) {
+		super("SimulationThread");
 		board = b.save();
 		launcher = l;
 		random = r;

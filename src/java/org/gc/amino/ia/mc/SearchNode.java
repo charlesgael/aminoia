@@ -8,8 +8,8 @@ import org.gc.amino.engine.mote.Mote;
 
 public class SearchNode extends Thread {
 	public static final int NB_THREADS = 2;
-	public static final int NB_RUNS = 4;
-	public static final int NB_COMPUTING = 150;
+	public static final int NB_RUNS = 16;
+	public static final int NB_COMPUTING = 1000;
 	public static final int NB_TURNS = 500;
 	public static final int NB_RUNS_MIN = NB_COMPUTING * NB_RUNS * NB_THREADS;
 	public static final long TIME_MIN = 1000;
@@ -51,7 +51,7 @@ public class SearchNode extends Thread {
 		while (n.parent != null)
 			n = n.parent;
 		
-		if (n.tries < NB_COMPUTING * NB_RUNS * NB_THREADS)
+		if (n.tries < NB_RUNS_MIN)
 			n.startComputing();
 	}
 
@@ -59,14 +59,28 @@ public class SearchNode extends Thread {
 	 * Lance la recherche de solution.
 	 */
 	public void startComputing() {
-		if (parent == null) board.reinit();
 		
-		if (children == null){
-			leaf();
+		if (parent == null) {
+			while(tries < NB_RUNS_MIN) {
+				board.reinit();
+				
+				if (children == null){
+					leaf();
+				}
+				else {
+					node();
+				}
+			}
 		}
 		else {
-			node();
+			if (children == null){
+				leaf();
+			}
+			else {
+				node();
+			}
 		}
+		
 	}
 
 	private void leaf() {
@@ -78,7 +92,7 @@ public class SearchNode extends Thread {
 		
 		simulate(children[0]);
 		
-		restartComputing();
+		//restartComputing();
 	}
 
 	private void node() {

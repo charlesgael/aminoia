@@ -2,6 +2,7 @@ package org.gc.amino.ia.mc;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class MontecarloIa implements IaDeliveryInterface {
 	private long nextFrame;
 	private SearchNode mc;
 	
-	private LinkedList<Action> actions;
+	private Action lastAction;
+	private int nbActions;
 
     public static void main( String[] argv ) throws IOException {
         IaLauncher.launch( argv, new MontecarloIa() );
@@ -31,7 +33,7 @@ public class MontecarloIa implements IaDeliveryInterface {
 	public void init(PointD size) {
 		Game.init(new TerrainMap(size));
         acceptFrame = true;
-        actions = new LinkedList<>();
+        //actions = new LinkedList<>();
 	}
 
 	@Override
@@ -65,34 +67,105 @@ public class MontecarloIa implements IaDeliveryInterface {
 		if (mc == null) {
 			System.out.println("Next computation");
 			
+			Iterator<Mote> it = otherMotes.iterator();
+			
+			while(it.hasNext()){
+				Mote m = it.next();
+				if (m.getRadius() < you.getRadius()*0.05)
+					it.remove();
+			}
+			
 			Board b = new Board(you, otherMotes);
 			mc = new SearchNode(null, b, null);
 			mc.start();
 		}
 		else if (mc.isResultAvailable()) {
-			System.out.println("Result available "+mc.getBestChild().getAction());
-			mc = mc.getBestChild();
-			mc.newRoot();
+			Action a = mc.getBestChild().getAction();
+			System.out.println("Result available "+a);
 			
-			for (int i=0;i<4;++i)
-				if (mc.getAction() != Action.NOTHING)
-					actions.addFirst(mc.getAction());
+			mc = null;
 			
-			mc.start();
-		}
-		else if (!actions.isEmpty()) {
-			return actions.pop().fastPoint(you);
-		}
-		/*else if (speed < 0.2 && lastMove != Action.NOTHING) {
-			PointD action = lastMove.point(you);
-			try {
-				System.out.println("speed up mypos("+you.getPosition().x+","+you.getPosition().y+") tir("+action.x+","+action.y+")");
-			}catch(Exception e){
-				System.out.println(e.getMessage());
+			if (!isBigEnough(you, otherMotes)) {
+				System.out.println("Not big enough : PLAY");
+				if (lastAction == null || !lastAction.isOpposite(a))
+				{
+					System.out.println("Not opposite direction");
+					lastAction = a;
+					return lastAction.fastPoint(you);
+				}
+				else {
+					lastAction = null;
+				}
 			}
-			return action;
-		}*/
+		}
+		else if (speed < 0.2 && !goodAngle(you.getSpeed(), you)) {
+			return lastAction.fastPoint(you);
+		}
 		
 		return null;
+	}
+
+	private boolean goodAngle(PointD speed, Mote you) {
+		if (lastAction == null) return true;
+		PointD will = lastAction.fastPoint(you);
+		if (will == null) return true;
+		
+		double angle = 0;
+		
+		if (speed.x > 0) {
+			if (speed.y >= 0) {
+				angle = Math.atan(speed.y / speed.x);
+			}
+			else {
+				angle = Math.atan(speed.y / speed.x) + 2* Math.PI;
+			}
+		}
+		else if (speed.x < 0) {
+			angle = Math.atan(speed.y / speed.x) + Math.PI;
+		}
+		else {
+			if (speed.y >= 0) {
+				angle = Math.PI /2;
+			}
+			else {
+				angle = 3*Math.PI /2;
+			}
+		}
+		
+		double angle2 = 0;
+		
+		if (will.x > 0) {
+			if (will.y >= 0) {
+				angle2 = Math.atan(will.y / will.x);
+			}
+			else {
+				angle2 = Math.atan(will.y / will.x) + 2* Math.PI;
+			}
+		}
+		else if (will.x < 0) {
+			angle2 = Math.atan(will.y / will.x) + Math.PI;
+		}
+		else {
+			if (will.y >= 0) {
+				angle2 = Math.PI /2;
+			}
+			else {
+				angle2 = 3*Math.PI /2;
+			}
+		}
+		
+		System.out.println("Angle1 : "+angle+"\nAngle2 : "+angle2+"\nGood : "+(Math.abs(angle2 - angle) < Math.PI /2));
+		
+		return Math.abs(angle2 - angle) < Math.PI /2;
+	}
+
+	private boolean isBigEnough(Mote you, List<Mote> otherMotes) {
+		double maxRadius = 0;
+		
+		for (Mote m : otherMotes) {
+			maxRadius = Math.max(maxRadius, m.getRadius());
+		}
+		
+		return you.getRadius()*0.9 > maxRadius;
 	}
 }
