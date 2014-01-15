@@ -35,15 +35,6 @@ public class RanddirIA implements IaDeliveryInterface {
 	private boolean hasDirection;
 
 	/* (non-Javadoc)
-	 * @see org.gc.amino.ia.httpserver.IaDeliveryInterface#init(org.gc.amino.engine.terrainmap.PointD)
-	 */
-	@Override
-	public void init(PointD size) {
-		Game.init(new TerrainMap(size));
-		//actions = new LinkedList<>();
-	}
-
-	/* (non-Javadoc)
 	 * @see org.gc.amino.ia.httpserver.IaDeliveryInterface#frame(org.gc.amino.engine.mote.Mote, java.util.List)
 	 */
 	@Override
@@ -63,5 +54,14 @@ public class RanddirIA implements IaDeliveryInterface {
 			return this.runningSimulation.getChoosenAction().pursue(you);
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.gc.amino.ia.httpserver.IaDeliveryInterface#init(org.gc.amino.engine.terrainmap.PointD)
+	 */
+	@Override
+	public void init(PointD size) {
+		Game.init(new TerrainMap(size));
+		//actions = new LinkedList<>();
 	}
 }

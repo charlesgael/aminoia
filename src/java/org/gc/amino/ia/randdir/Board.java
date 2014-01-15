@@ -10,9 +10,12 @@ import org.gc.amino.engine.mote.Mote;
 import org.gc.amino.engine.terrainmap.PointD;
 import org.gc.amino.util.Util;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class Board.
+ * 
+ * That class represents the board of amino as RanddirIA sees it.
+ * It has improved versions of the function {@link org.gc.amino.engine.mote.Mote#update()} plus
+ * an {@link #eval()} function that permits to evaluate the situation at a given time.
  */
 public class Board {
 	private Mote me;
@@ -40,38 +43,25 @@ public class Board {
 		reinit();
 	}
 	
-	/**
-	 * Put the board in the initial configuration.
-	 */
-	public void reinit() {
-		
-		me = me_init.clone();
-		
-		if (others == null) others = new LinkedList<>();
-		others.clear();
-		for (Mote m : others_init) {
-			others.add(m.clone());
-		}
+	private void eat(Mote larger, Mote smaller, double new_radius_larger, double new_radius_smaller) {
+        double angle_direction = Math.atan2( larger.getPosition().y - smaller.getPosition().y, larger.getPosition().x - smaller.getPosition().x );
+        // while growing from radius to new_radius, absorb momentum thus amend speed
+        double added_speed_factor = Util.sqr( smaller.getRadius() - new_radius_smaller ) / Util.sqr( larger.getRadius() );
+        larger.getSpeed().x = larger.getSpeed().x * Util.sqr( larger.getRadius() ) / Util.sqr( new_radius_larger )
+                              + smaller.getSpeed().x * added_speed_factor;
+        larger.getSpeed().y = larger.getSpeed().y * Util.sqr( larger.getRadius() ) / Util.sqr( new_radius_larger )
+                              + smaller.getSpeed().y * added_speed_factor;
+        larger.getPosition().x += ( larger.getRadius() - new_radius_larger ) * Math.cos( angle_direction );
+        larger.getPosition().y += ( larger.getRadius() - new_radius_larger ) * Math.sin( angle_direction );
+        larger.setRadius( new_radius_larger );
+        smaller.getPosition().x += ( new_radius_smaller - smaller.getRadius() ) * Math.cos( angle_direction );
+        smaller.getPosition().y += ( new_radius_smaller - smaller.getRadius() ) * Math.sin( angle_direction );
+        smaller.setRadius( new_radius_smaller );
+        if ( new_radius_smaller == 0 ) {
+            smaller.die();
+        }
 	}
 	
-	/**
-	 * Permits to get a copy of the board as it is.
-	 * 
-	 * @return a copy of the board
-	 */
-	public Board save() {
-		return new Board(me, others);
-	}
-
-	/**
-	 * Checks if the game is finished.
-	 * 
-	 * @return true, if is finished
-	 */
-	public boolean isFinished() {
-		return me.isDead();
-	}
-
 	/**
 	 * Evaluates the score for that board.
 	 * 
@@ -91,6 +81,15 @@ public class Board {
 	}
 
 	/**
+	 * Gets the IA controlled mote.
+	 * 
+	 * @return IA controlled mote
+	 */
+	public Mote getMe() {
+		return me;
+	}
+
+	/**
 	 * Gets all the motes.
 	 * 
 	 * @return the motes
@@ -100,6 +99,15 @@ public class Board {
 		m.add(me);
 		m.addAll(others);
 		return m;
+	}
+
+	/**
+	 * Checks if the game is finished.
+	 * 
+	 * @return true, if is finished
+	 */
+	public boolean isFinished() {
+		return me.isDead();
 	}
     
     /**
@@ -149,7 +157,30 @@ public class Board {
         }
 	}
 	
-    private void update(Mote m) {
+    /**
+	 * Put the board in the initial configuration.
+	 */
+	public void reinit() {
+		
+		me = me_init.clone();
+		
+		if (others == null) others = new LinkedList<>();
+		others.clear();
+		for (Mote m : others_init) {
+			others.add(m.clone());
+		}
+	}
+
+	/**
+	 * Permits to get a copy of the board as it is.
+	 * 
+	 * @return a copy of the board
+	 */
+	public Board save() {
+		return new Board(me, others);
+	}
+
+	private void update(Mote m) {
     	// Compute of the new position with speed
         PointD new_position = new PointD( m.getPosition().x + m.getSpeed().x, m.getPosition().y + m.getSpeed().y );
         double mradius = m.getRadius();
@@ -201,32 +232,4 @@ public class Board {
             }
         }
     }
-
-	private void eat(Mote larger, Mote smaller, double new_radius_larger, double new_radius_smaller) {
-        double angle_direction = Math.atan2( larger.getPosition().y - smaller.getPosition().y, larger.getPosition().x - smaller.getPosition().x );
-        // while growing from radius to new_radius, absorb momentum thus amend speed
-        double added_speed_factor = Util.sqr( smaller.getRadius() - new_radius_smaller ) / Util.sqr( larger.getRadius() );
-        larger.getSpeed().x = larger.getSpeed().x * Util.sqr( larger.getRadius() ) / Util.sqr( new_radius_larger )
-                              + smaller.getSpeed().x * added_speed_factor;
-        larger.getSpeed().y = larger.getSpeed().y * Util.sqr( larger.getRadius() ) / Util.sqr( new_radius_larger )
-                              + smaller.getSpeed().y * added_speed_factor;
-        larger.getPosition().x += ( larger.getRadius() - new_radius_larger ) * Math.cos( angle_direction );
-        larger.getPosition().y += ( larger.getRadius() - new_radius_larger ) * Math.sin( angle_direction );
-        larger.setRadius( new_radius_larger );
-        smaller.getPosition().x += ( new_radius_smaller - smaller.getRadius() ) * Math.cos( angle_direction );
-        smaller.getPosition().y += ( new_radius_smaller - smaller.getRadius() ) * Math.sin( angle_direction );
-        smaller.setRadius( new_radius_smaller );
-        if ( new_radius_smaller == 0 ) {
-            smaller.die();
-        }
-	}
-
-	/**
-	 * Gets the IA controlled mote.
-	 * 
-	 * @return IA controlled mote
-	 */
-	public Mote getMe() {
-		return me;
-	}
 }

@@ -3,6 +3,9 @@ package org.gc.amino.ia.randdir;
 
 /**
  * The Class SearchNode.
+ * 
+ * This is the core of the IA. It's a tree based search node that permits
+ * to have a representation of the research.
  */
 public class SearchNode extends Thread {
 
@@ -43,6 +46,38 @@ public class SearchNode extends Thread {
 		this.parent = parent;
 	}
 	
+	private void computeDirection() {
+		//System.out.println("me "+board.getMe().getPosition().x+ ", "+board.getMe().getPosition().y);
+		board.move(action.point(board.getMe()));
+		
+		// Computes for the number of turns determined in SearchNode
+		try{
+			for (int run = 0;
+					run < SearchNode.NB_TURNS;
+					++run) {
+				//System.out.println("me "+board.getMe().getPosition().x+ ", "+board.getMe().getPosition().y);
+				
+				board.nextTurn();
+				
+				board.move(action.pursue(board.getMe()));
+			}
+			score = board.eval();
+		}catch(IllegalStateException e) {
+			System.out.println("died");
+			score = 0;
+		}
+		//System.exit(-1);
+	}
+	
+	/**
+	 * Gets the chosen action.
+	 * 
+	 * @return the chosen action
+	 */
+	public Action getChoosenAction() {
+		return this.choosenAction;
+	}
+	
 	/**
 	 * Initializes the children.
 	 */
@@ -58,7 +93,7 @@ public class SearchNode extends Thread {
 			children[i] = new SearchNode(this, board, a);
 		}
 	}
-	
+
 	/**
 	 * Checks if computation is finished.
 	 * 
@@ -67,7 +102,7 @@ public class SearchNode extends Thread {
 	public boolean isComputationFinished() {
 		return this.finished;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Thread#run()
 	 */
@@ -113,37 +148,5 @@ public class SearchNode extends Thread {
 			}
 		}
 		System.out.println("BEST "+choosenAction+": "+((choosenScore==0) ? "died" : choosenScore));
-	}
-
-	private void computeDirection() {
-		//System.out.println("me "+board.getMe().getPosition().x+ ", "+board.getMe().getPosition().y);
-		board.move(action.point(board.getMe()));
-		
-		// Computes for the number of turns determined in SearchNode
-		try{
-			for (int run = 0;
-					run < SearchNode.NB_TURNS;
-					++run) {
-				//System.out.println("me "+board.getMe().getPosition().x+ ", "+board.getMe().getPosition().y);
-				
-				board.nextTurn();
-				
-				board.move(action.pursue(board.getMe()));
-			}
-			score = board.eval();
-		}catch(IllegalStateException e) {
-			System.out.println("died");
-			score = 0;
-		}
-		//System.exit(-1);
-	}
-
-	/**
-	 * Gets the chosen action.
-	 * 
-	 * @return the chosen action
-	 */
-	public Action getChoosenAction() {
-		return this.choosenAction;
 	}
 }
