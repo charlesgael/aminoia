@@ -10,6 +10,9 @@ import org.gc.amino.engine.mote.Mote;
 import org.gc.amino.engine.terrainmap.PointD;
 import org.gc.amino.util.Util;
 
+/**
+ * The Class Board.
+ */
 public class Board {
 	private Mote me;
 	private List<Mote> others;
@@ -17,15 +20,23 @@ public class Board {
 	private Mote me_init;
 	private List<Mote> others_init;
 	
-	private LinkedList<Action> actions;
-	
+	/**
+	 * Instantiates a new board.
+	 * 
+	 * @param me
+	 *            the mote the IA is playing
+	 * @param others
+	 *            the other motes presents on the battlefield
+	 */
 	public Board(Mote you, List<Mote> others) {
 		this.me_init = you;
 		this.others_init = others;
-
 		others = new LinkedList<>();
 	}
 	
+	/**
+	 * Put the board in the initial configuration.
+	 */
 	public void reinit() {
 		me = me_init.clone();
 		
@@ -36,17 +47,31 @@ public class Board {
 		}
 	}
 	
+	/**
+	 * Permits to get a copy of the board as it is.
+	 * 
+	 * @return a copy of the board
+	 */
 	public Board save() {
 		return new Board(me, others);
 	}
 
+	/**
+	 * Checks if the game is finished.
+	 * 
+	 * @return true, if is finished
+	 */
 	public boolean isFinished() {
 		return me.isDead();
 	}
 
+	/**
+	 * Evaluates the score for that board.
+	 * 
+	 * @return the score
+	 */
 	public double eval() {
-		double radius = me.getRadius();
-		double eval = radius;
+		double eval = me.getRadius();
 		
 		/*for ( Mote mote : others ) {
 			if ((mote.getRadius() + radius) * 2 > me.getDistance(mote)
@@ -57,16 +82,28 @@ public class Board {
 		return eval;
 	}
 
+	/**
+	 * Gets all the motes.
+	 * 
+	 * @return the motes
+	 */
 	public List<Mote> getMotes() {
 		ArrayList<Mote> m = new ArrayList<>();
 		m.add(me);
 		m.addAll(others);
 		return m;
 	}
+	
+	/**
+	 * Move emulates a matter ejection to propulse the controlled mote.
+	 * 
+	 * @param targetDirection
+	 *            the direction where the matter is ejected
+	 */
     public void move( PointD targetDirection ) {
     	if (targetDirection == null) return;
         if ( me.isDead() ) {
-            throw new IllegalStateException( "dead" );
+            throw new IllegalStateException( "I'm dead !" );
         }
         double angle_direction = Math.atan2( me.getPosition().y - targetDirection.y, me.getPosition().x - targetDirection.x );
         double angle_cos = Math.cos( angle_direction );
@@ -85,21 +122,24 @@ public class Board {
         me.setSpeed(new PointD(me.getSpeed().x + angle_cos * added_speed, me.getSpeed().y + angle_sin * added_speed));
     }
 
+    /**
+	 * Computes avancement.
+	 */
 	public void nextTurn() {
-		if ( ! me.isDead() ) {
+		if ( !me.isDead() ) {
             update(me);
 		}
 		
         Iterator<Mote> it = others.iterator();
         while ( it.hasNext() ) {
             Mote mote = it.next();
-            if ( ! mote.isDead() ) {
+            if ( !mote.isDead() ) {
                 update(mote);
             } else {
                 it.remove();
             }
         }
-	}
+	}	
 	
     public void update(Mote m) {
     	// Compute of the new position with speed
@@ -172,6 +212,11 @@ public class Board {
         }
 	}
 
+	/**
+	 * Gets the IA controlled mote.
+	 * 
+	 * @return IA controlled mote
+	 */
 	public Mote getMe() {
 		return me;
 	}
