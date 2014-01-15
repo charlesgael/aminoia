@@ -2,17 +2,30 @@ package org.gc.amino.ia.mc;
 
 import java.util.Random;
 
+/**
+ * The Class Simulation.
+ */
 public class Simulation extends Thread {
 	private Board board;
 	private SearchNode launcher;
 	private Random random;
 	int nbTurns;
 	
-	public Simulation(Board b, SearchNode l, Random r) {
+	/**
+	 * Instantiates a new simulation.
+	 * 
+	 * @param board
+	 *            the board to use for the simulation
+	 * @param launcher
+	 *            the launcher that started that simulation
+	 * @param random
+	 *            the random generator
+	 */
+	public Simulation(Board board, SearchNode launcher, Random random) {
 		super("SimulationThread");
-		board = b.save();
-		launcher = l;
-		random = r;
+		this.board = board.save();
+		this.launcher = launcher;
+		this.random = random;
 		nbTurns=SearchNode.MOVE_IN_PROGRESS;
 	}
 	

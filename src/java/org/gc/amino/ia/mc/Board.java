@@ -23,7 +23,7 @@ public class Board {
 	/**
 	 * Instantiates a new board.
 	 * 
-	 * @param me
+	 * @param you
 	 *            the mote the IA is playing
 	 * @param others
 	 *            the other motes presents on the battlefield
@@ -141,7 +141,7 @@ public class Board {
         }
 	}	
 	
-    public void update(Mote m) {
+    private void update(Mote m) {
     	// Compute of the new position with speed
         PointD new_position = new PointD( m.getPosition().x + m.getSpeed().x, m.getPosition().y + m.getSpeed().y );
         double mradius = m.getRadius();

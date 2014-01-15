@@ -3,6 +3,9 @@ package org.gc.amino.ia.mc;
 import org.gc.amino.engine.mote.Mote;
 import org.gc.amino.engine.terrainmap.PointD;
 
+/**
+ * The Enum Action.
+ */
 public enum Action {
 	NOTHING(0),
 	NORTH(1),
@@ -14,8 +17,15 @@ public enum Action {
 	WEST(7),
 	NORTH_WEST(8);
 	
-	public static Action getAction(int v) {
-		switch(v) {
+	/**
+	 * Gets the action corresponding to the value.
+	 * 
+	 * @param value
+	 *            the value
+	 * @return the action
+	 */
+	public static Action getAction(int value) {
+		switch(value) {
 		case 0:
 			return NOTHING;
 		case 1:
@@ -38,13 +48,19 @@ public enum Action {
 		return null;
 	}
 	
+	/** The number of directions available. */
 	public static final int NB_DIRECTIONS = 9;
 	private int val;
 	
-	Action(int val) {
+	private Action(int val) {
 		this.val = val;
 	}
 	
+	/**
+	 * Returns the direction represented by that action.
+	 * 
+	 * @return direction represented by the action
+	 */
 	public PointD go() {
 		switch(this) {
 		case NORTH:
@@ -67,6 +83,13 @@ public enum Action {
 		return null;
 	}
 
+	/**
+	 * Computes where the mote must shoot in order to go where it wants.
+	 * 
+	 * @param me
+	 *            the mote the IA is playing
+	 * @return where the mote must shoot
+	 */
 	public PointD fastPoint(Mote me) {
 		PointD pos = me.getPosition();
 		PointD add = go();
@@ -78,7 +101,14 @@ public enum Action {
 		}
 		return null;
 	}
-		
+
+	/**
+	 * Computes where the mote must shoot in order to go where it wants.
+	 * 
+	 * @param me
+	 *            the mote the IA is playing
+	 * @return where the mote must shoot
+	 */
 	public PointD point(Mote me) {
 		PointD pos = me.getPosition();
 		PointD speed = me.getSpeed();
@@ -122,6 +152,13 @@ public enum Action {
 		return null;
 	}
 
+	/**
+	 * Checks if the direction in argument is opposite to that direction.
+	 * 
+	 * @param action
+	 *            the action
+	 * @return true, if is opposite
+	 */
 	public boolean isOpposite(Action action) {
 		if (this == NOTHING)
 			return false;

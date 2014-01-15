@@ -7,14 +7,32 @@ import java.util.Calendar;
  * The Class SearchNode.
  */
 public class SearchNode extends Thread {
+	
+	/** The number of threads to launch. */
 	public static final int NB_THREADS = 2;
+	
+	/** The number of run per threads. */
 	public static final int NB_RUNS = 16;
+	
+	/** The number of computing per run. */
 	public static final int NB_COMPUTING = 1000;
+	
+	/** The number of turn per computing. */
 	public static final int NB_TURNS = 100;  // correct = 100
+	
+	/** The minimal number or tries to attein before the result is considered ok. */
 	public static final int NB_RUNS_MIN = NB_COMPUTING * NB_RUNS * NB_THREADS;
+	
+	/** The minimal time to compute. */
 	public static final long TIME_MIN = 1000;	
+	
+	/** The exploration factor of the montecarlo method. */
 	public static final double EXPLORE_FACTOR = 0.3;
+	
+	/** The maximum score atteinable. */
 	public static final double MAX_SCORE = 999;
+	
+	/** The weather there is a move in progress and for how long. */
 	public static final int MOVE_IN_PROGRESS = 50;
 	
 	private long timeStart;	

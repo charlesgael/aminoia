@@ -15,9 +15,6 @@ import org.gc.amino.ia.httpserver.IaLauncher;
  * The Class montecarloIa.
  */
 public class MontecarloIa implements IaDeliveryInterface {
-	public static final long INTERVAL = 1000;
-	
-
 	/*private Mote me;
 	private boolean acceptFrame;
 	private long nextFrame;
@@ -31,6 +28,8 @@ public class MontecarloIa implements IaDeliveryInterface {
 	 * 
 	 * @param argv
 	 *            parameters given to the program
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static void main( String[] argv ) throws IOException {
 		IaLauncher.launch( argv, new MontecarloIa() );
