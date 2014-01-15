@@ -3,13 +3,19 @@ package org.gc.amino.ia.randdir;
 import org.gc.amino.engine.mote.Mote;
 import org.gc.amino.engine.terrainmap.PointD;
 
+import com.sun.org.apache.xpath.internal.operations.Minus;
+
+// TODO: Auto-generated Javadoc
 /**
  * The Class Action.
  */
 public class Action {
 	
 	/** The Constant NB_DIVISIONS. */
-	public static final int NB_DIVISIONS = 36;
+	public static final int NB_DIVISIONS = 64;
+	
+	/** The Constant MIN_SPEED. */
+	public static final double MIN_SPEED = 2;
 	
 	private int val;
 	
@@ -29,13 +35,14 @@ public class Action {
 	 * @return direction represented by the action
 	 */
 	public PointD go() {
-		double angle = ((double)val) / 180. * Math.PI;
+		
+		double angle = Math.toRadians(val);
 		
 		return new PointD(Math.cos(angle), -Math.sin(angle));
 	}
 		
 	/**
-	 * Computes where the mote must shoot in order to go where it wants
+	 * Computes where the mote must shoot in order to go where it wants.
 	 * 
 	 * @param me
 	 *            the mote the IA is playing
@@ -44,6 +51,7 @@ public class Action {
 	public PointD point(Mote me) {
 		PointD pos = me.getPosition();
 		PointD speed = me.getSpeed();
+		double sp = Math.sqrt(Math.pow(speed.x, 2) + Math.pow(speed.y, 2));
 		PointD will = go();
 		
 		if (will == null) return null;
@@ -53,7 +61,7 @@ public class Action {
 		x = speed.x - will.x;
 		y = speed.y - will.y;
 		
-		if (Math.abs(x) < 0.05) {
+		if (sp > MIN_SPEED) {
 			return null;
 		}
 		
@@ -66,6 +74,30 @@ public class Action {
 	@Override
 	public String toString() {
 		return "Choosen angle: "+val+"°";
+	}
+
+	/**
+	 * Returns a point that permits the mote to continue in his direction.
+	 * 
+	 * @param me
+	 *            the mote the IA is playing
+	 * @return the point asked
+	 */
+	public PointD pursue(Mote me) {
+		PointD pos = me.getPosition();
+		PointD speed = me.getSpeed();
+		double sp = Math.sqrt(Math.pow(speed.x, 2) + Math.pow(speed.y, 2));
+		
+		double x = 0, y = 0;
+		
+		x = -speed.x;
+		y = -speed.y;
+		
+		if (sp > MIN_SPEED) {
+			return null;
+		}
+		
+		return new PointD(pos.x + x*10, pos.y + y*10);
 	}
 
 }

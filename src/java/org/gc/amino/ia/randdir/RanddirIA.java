@@ -9,7 +9,6 @@ import org.gc.amino.engine.terrainmap.PointD;
 import org.gc.amino.engine.terrainmap.TerrainMap;
 import org.gc.amino.ia.httpserver.IaDeliveryInterface;
 import org.gc.amino.ia.httpserver.IaLauncher;
-import org.gc.amino.ia.mc.MontecarloIa;
 
 /**
  * The Class RanddirIA.
@@ -29,8 +28,11 @@ public class RanddirIA implements IaDeliveryInterface {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public static void main( String[] argv ) throws IOException {
-		IaLauncher.launch( argv, new MontecarloIa() );
+		IaLauncher.launch( argv, new RanddirIA() );
 	}
+
+	private SearchNode runningSimulation;
+	private boolean hasDirection;
 
 	/* (non-Javadoc)
 	 * @see org.gc.amino.ia.httpserver.IaDeliveryInterface#init(org.gc.amino.engine.terrainmap.PointD)
@@ -46,6 +48,20 @@ public class RanddirIA implements IaDeliveryInterface {
 	 */
 	@Override
 	public PointD frame(Mote you, List<Mote> otherMotes) {
+		if (you == null) throw new RuntimeException("me must be not null");
+		if (runningSimulation == null) {
+			Board theBoard = new Board(you, otherMotes);
+			runningSimulation = new SearchNode(null, theBoard, null);
+			runningSimulation.initChildren();
+			runningSimulation.start();
+		}
+		if (this.runningSimulation.isComputationFinished() && !this.hasDirection) {
+			hasDirection = true;
+			return this.runningSimulation.getChoosenAction().point(you);
+		}
+		else if (this.runningSimulation.isComputationFinished() && this.hasDirection) {
+			return this.runningSimulation.getChoosenAction().pursue(you);
+		}
 		return null;
 	}
 }

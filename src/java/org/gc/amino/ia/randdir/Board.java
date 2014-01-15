@@ -10,6 +10,7 @@ import org.gc.amino.engine.mote.Mote;
 import org.gc.amino.engine.terrainmap.PointD;
 import org.gc.amino.util.Util;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class Board.
  */
@@ -35,12 +36,15 @@ public class Board {
 		this.others_init = others;
 
 		others = new LinkedList<>();
+		
+		reinit();
 	}
 	
 	/**
 	 * Put the board in the initial configuration.
 	 */
 	public void reinit() {
+		
 		me = me_init.clone();
 		
 		if (others == null) others = new LinkedList<>();
@@ -170,6 +174,7 @@ public class Board {
         }
         // Eat or get eaten
         for ( Mote mote : getMotes() ) {
+        	if (m == mote) continue;
         	// Distance
         	double distance = m.getDistance( mote );
             if ( distance < mradius + mote.getRadius() ) {
