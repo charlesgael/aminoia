@@ -1,9 +1,7 @@
 package org.gc.amino.ia.mc;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.gc.amino.engine.Game;
@@ -13,30 +11,53 @@ import org.gc.amino.engine.terrainmap.TerrainMap;
 import org.gc.amino.ia.httpserver.IaDeliveryInterface;
 import org.gc.amino.ia.httpserver.IaLauncher;
 
+/**
+ * The Class montecarloIa.
+ */
 public class MontecarloIa implements IaDeliveryInterface {
 	public static final long INTERVAL = 1000;
+	
 
-	private Mote me;
-
+	/*private Mote me;
 	private boolean acceptFrame;
 	private long nextFrame;
+	private int nbActions;*/
+	
 	private SearchNode mc;
-
 	private Action lastAction;
-	private int nbActions;
-
+	
+	/**
+	 * Launch the MonteCarloIa.
+	 * 
+	 * @param argv
+	 *            parameters given to the program
+	 */
 	public static void main( String[] argv ) throws IOException {
 		IaLauncher.launch( argv, new MontecarloIa() );
 	}
 
-	@Override
+	/**
+	 * Initialize the game of a given size.
+	 * 
+	 * @param size
+	 *            size of the map
+	 */
 	public void init(PointD size) {
 		Game.init(new TerrainMap(size));
-		acceptFrame = true;
+		//acceptFrame = true;
 		//actions = new LinkedList<>();
 	}
 
-	@Override
+	/**
+	 * Launch the MonteCarloIa.
+	 * 
+	 * @param you
+	 *            the current mote
+	 * 
+	 * @param otherMotes
+	 *            all the others motes in the environment
+	 * @return a new direction
+	 */
 	public PointD frame(Mote you, List<Mote> otherMotes) {
 		/*if (acceptFrame) {
 			PointD action = null;
@@ -62,13 +83,14 @@ public class MontecarloIa implements IaDeliveryInterface {
 			acceptFrame = true;
 		}*/
 
+		// Compute the current speed of our mote
 		double speed = Math.sqrt( Math.pow(you.getSpeed().x, 2) + Math.pow(you.getSpeed().y, 2));
 
 		if (mc == null) {
-			System.out.println("Next computation");
-
+			System.out.println("--- Next computation ---");
 			Iterator<Mote> it = otherMotes.iterator();
 
+			// Filter : ignore very small closed remotes (gain in compuation)
 			while(it.hasNext()){
 				Mote m = it.next();
 				if (m.getRadius() < you.getRadius()*0.05)
@@ -105,6 +127,7 @@ public class MontecarloIa implements IaDeliveryInterface {
 		return null;
 	}
 
+	// TO DO : SIMPLIFY
 	private boolean goodAngle(PointD speed, Mote you) {
 		if (lastAction == null) return true;
 		PointD will = lastAction.fastPoint(you);
@@ -154,11 +177,12 @@ public class MontecarloIa implements IaDeliveryInterface {
 			}
 		}
 
-		System.out.println("Angle1 : "+angle+"\nAngle2 : "+angle2+"\nGood : "+(Math.abs(angle2 - angle) < Math.PI /2));
+		//System.out.println("Angle2 : "+(angle2 - angle)+"\nGood : "+(Math.abs(angle2 - angle) < Math.PI /2));
 
 		return Math.abs(angle2 - angle) < Math.PI /2;
 	}
 
+	
 	private boolean isBigEnough(Mote you, List<Mote> otherMotes) {
 		double maxRadius = 0;
 
