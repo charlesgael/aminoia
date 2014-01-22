@@ -36,20 +36,17 @@ public class Simulation extends Thread {
 		for (int r = 0;r<SearchNode.NB_RUNS;++r) {
 			board.reinit();
 			
-			for (int a = 0;a<SearchNode.NB_TURNS && !board.isFinished();++a) {
-				
-				/*if(timeMove() && act != null) {
-					System.out.println("ATTENTE");
+			for (int a = 0;a<SearchNode.NB_TURNS && !board.isFinished();++a) {				
+				if(timeMove() && act != null) {
 					board.move(act.fastPoint(board.getMe()));	
 					board.nextTurn();
 					nbTurns++;
-				} else {*/	
-					//System.out.println("NEW CALCUL");
-					act = Action.getAction(random.nextInt(Action.NB_DIRECTIONS));				
+				} else {
+					act = Action.getAction(random.nextInt(Action.NB_DIRECTIONS));	
 					board.move(act.fastPoint(board.getMe()));				
 					board.nextTurn();
-					/*nbTurns = 0;
-				}*/
+					nbTurns = 0;
+				}
 			}
 			
 			double eval = board.eval();

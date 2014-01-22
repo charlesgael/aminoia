@@ -18,7 +18,7 @@ public class SearchNode extends Thread {
 	public static final int NB_COMPUTING = 1000;
 	
 	/** The number of turn per computing. */
-	public static final int NB_TURNS = 100;  // correct = 100
+	public static final int NB_TURNS = 100;  // initial = 100
 	
 	/** The minimal number or tries to attain before the result is considered ready. */
 	public static final int NB_RUNS_MIN = NB_COMPUTING * NB_RUNS * NB_THREADS;
@@ -33,7 +33,7 @@ public class SearchNode extends Thread {
 	public static final double MAX_SCORE = 999;
 	
 	/** The weather there is a move in progress and for how long. */
-	public static final int MOVE_IN_PROGRESS = 50;
+	public static final int MOVE_IN_PROGRESS = 75;
 	
 	private long timeStart;	
 	private Board board;

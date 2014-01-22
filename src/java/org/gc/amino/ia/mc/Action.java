@@ -4,7 +4,7 @@ import org.gc.amino.engine.mote.Mote;
 import org.gc.amino.engine.terrainmap.PointD;
 
 /**
- * The Enum Action.
+ * The Enumeration Action.
  */
 public enum Action {
 	NOTHING(0),
@@ -63,22 +63,24 @@ public enum Action {
 	 */
 	public PointD go() {
 		switch(this) {
-		case NORTH:
-			return new PointD(0, 100);
-		case NORTH_EAST:
-			return new PointD(-50, 50);
-		case EAST:
-			return new PointD(-100, 0);
-		case SOUTH_EAST:
-			return new PointD(-50, -50);
-		case SOUTH:
-			return new PointD(0, -100);
-		case SOUTH_WEST:
-			return new PointD(50, -50);
-		case WEST:
-			return new PointD(100, 0);
-		case NORTH_WEST:
-			return new PointD(50, 50);
+			case NORTH:
+				return new PointD(0, 100);
+			case NORTH_EAST:
+				return new PointD(-50, 50);
+			case EAST:
+				return new PointD(-100, 0);
+			case SOUTH_EAST:
+				return new PointD(-50, -50);
+			case SOUTH:
+				return new PointD(0, -100);
+			case SOUTH_WEST:
+				return new PointD(50, -50);
+			case WEST:
+				return new PointD(100, 0);
+			case NORTH_WEST:
+				return new PointD(50, 50);
+			case NOTHING:
+				return null;
 		}
 		return null;
 	}
@@ -93,7 +95,6 @@ public enum Action {
 	public PointD fastPoint(Mote me) {
 		PointD pos = me.getPosition();
 		PointD add = go();
-		PointD speed = me.getSpeed();
 		
 		if (add != null) {
 			pos.set(pos.x + add.x, pos.y + add.y);
@@ -127,30 +128,6 @@ public enum Action {
 		
 		return new PointD(pos.x + x*10, pos.y + y*10);
 	}
-	
-	public String toString() {
-		switch(this) {
-		case NOTHING:
-			return "NOTHING";
-		case NORTH:
-			return "NORTH";
-		case NORTH_EAST:
-			return "NORTH_EAST";
-		case EAST:
-			return "EAST";
-		case SOUTH_EAST:
-			return "SOUTH_EAST";
-		case SOUTH:
-			return "SOUTH";
-		case SOUTH_WEST:
-			return "SOUTH_WEST";
-		case WEST:
-			return "WEST";
-		case NORTH_WEST:
-			return "NORTH_WEST";
-		}
-		return null;
-	}
 
 	/**
 	 * Checks if the direction in argument is opposite to that direction.
@@ -167,5 +144,33 @@ public enum Action {
 				|| (((val-1)+3)%8)+1 == action.val
 				|| (((val-1)+5)%8)+1 == action.val;
 	}
-
+	
+	/**
+	 * Display the label of the current action
+	 * 
+	 * @return label of the action (String)
+	 */
+	public String toString() {
+		switch(this) {
+			case NOTHING:
+				return "NOTHING";
+			case NORTH:
+				return "NORTH";
+			case NORTH_EAST:
+				return "NORTH_EAST";
+			case EAST:
+				return "EAST";
+			case SOUTH_EAST:
+				return "SOUTH_EAST";
+			case SOUTH:
+				return "SOUTH";
+			case SOUTH_WEST:
+				return "SOUTH_WEST";
+			case WEST:
+				return "WEST";
+			case NORTH_WEST:
+				return "NORTH_WEST";
+		}
+		return null;
+	}
 }

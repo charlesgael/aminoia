@@ -102,12 +102,11 @@ public class MontecarloIa implements IaDeliveryInterface {
 		}
 		else if (mc.isResultAvailable()) {
 			Action a = mc.getBestChild().getAction();
-			System.out.println("Result available "+a);
+			System.out.println("Direction taken: "+a);
 
 			mc = null;
 
 			if (!isBigEnough(you, otherMotes)) {
-				System.out.println("Not big enough : PLAY");
 				if (lastAction == null || !lastAction.isOpposite(a))
 				{
 					System.out.println("Not opposite direction");
@@ -162,11 +161,8 @@ public class MontecarloIa implements IaDeliveryInterface {
 		double angle2 = 0;
 		angle2 = checkSpeed(will);
 
-		//System.out.println("Angle2 : "+(angle2 - angle)+"\nGood : "+(Math.abs(angle2 - angle) < Math.PI /2));
-
 		return Math.abs(angle2 - angle) < Math.PI /2;
 	}
-
 	
 	private boolean isBigEnough(Mote you, List<Mote> otherMotes) {
 		double maxRadius = 0;
@@ -175,6 +171,6 @@ public class MontecarloIa implements IaDeliveryInterface {
 			maxRadius = Math.max(maxRadius, m.getRadius());
 		}
 
-		return you.getRadius()*0.9 > maxRadius;
+		return you.getRadius()*0.85 > maxRadius;
 	}
 }
