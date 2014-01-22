@@ -124,57 +124,43 @@ public class MontecarloIa implements IaDeliveryInterface {
 		}
 
 		return null;
-	}
-
-	// TO DO : SIMPLIFY
-	private boolean goodAngle(PointD speed, Mote you) {
-		if (lastAction == null) return true;
-		PointD will = lastAction.fastPoint(you);
-		if (will == null) return true;
-
+	}	
+	
+	private double checkSpeed(PointD point) {
 		double angle = 0;
-
-		if (speed.x > 0) {
-			if (speed.y >= 0) {
-				angle = Math.atan(speed.y / speed.x);
+		
+		if (point.x > 0) {
+			if (point.y >= 0) {
+				angle = Math.atan(point.y / point.x);
 			}
 			else {
-				angle = Math.atan(speed.y / speed.x) + 2* Math.PI;
+				angle = Math.atan(point.y / point.x) + 2* Math.PI;
 			}
 		}
-		else if (speed.x < 0) {
-			angle = Math.atan(speed.y / speed.x) + Math.PI;
+		else if (point.x < 0) {
+			angle = Math.atan(point.y / point.x) + Math.PI;
 		}
 		else {
-			if (speed.y >= 0) {
+			if (point.y >= 0) {
 				angle = Math.PI /2;
 			}
 			else {
 				angle = 3*Math.PI /2;
 			}
 		}
+		return angle;
+	}
+
+	private boolean goodAngle(PointD speed, Mote you) {
+		if (lastAction == null) return true;
+		PointD will = lastAction.fastPoint(you);
+		if (will == null) return true;
+
+		double angle = 0;		
+		angle = checkSpeed(speed);
 
 		double angle2 = 0;
-
-		if (will.x > 0) {
-			if (will.y >= 0) {
-				angle2 = Math.atan(will.y / will.x);
-			}
-			else {
-				angle2 = Math.atan(will.y / will.x) + 2* Math.PI;
-			}
-		}
-		else if (will.x < 0) {
-			angle2 = Math.atan(will.y / will.x) + Math.PI;
-		}
-		else {
-			if (will.y >= 0) {
-				angle2 = Math.PI /2;
-			}
-			else {
-				angle2 = 3*Math.PI /2;
-			}
-		}
+		angle2 = checkSpeed(will);
 
 		//System.out.println("Angle2 : "+(angle2 - angle)+"\nGood : "+(Math.abs(angle2 - angle) < Math.PI /2));
 

@@ -20,7 +20,7 @@ public class SearchNode extends Thread {
 	/** The number of turn per computing. */
 	public static final int NB_TURNS = 100;  // correct = 100
 	
-	/** The minimal number or tries to attein before the result is considered ok. */
+	/** The minimal number or tries to attain before the result is considered ready. */
 	public static final int NB_RUNS_MIN = NB_COMPUTING * NB_RUNS * NB_THREADS;
 	
 	/** The minimal time to compute. */
@@ -29,7 +29,7 @@ public class SearchNode extends Thread {
 	/** The exploration factor of the montecarlo method. */
 	public static final double EXPLORE_FACTOR = 0.3;
 	
-	/** The maximum score atteinable. */
+	/** The maximum score attainable. */
 	public static final double MAX_SCORE = 999;
 	
 	/** The weather there is a move in progress and for how long. */
@@ -165,9 +165,9 @@ public class SearchNode extends Thread {
 		double bestScore = bestChild.score(tries);			
 		
 		// DEBUG
-		for (int i=0;i<children.length;++i) {
+		/*for (int i=0;i<children.length;++i) {
 			System.out.println(children[i].score(tries));
-		}
+		}*/
 		
 		for (int i=1;i<children.length;++i) {
 			double candidat = children[i].score(tries);
@@ -205,8 +205,10 @@ public class SearchNode extends Thread {
 	 *            evaluation of the node after simulation on it
 	 */
 	public void addScore(double eval) {
+		// Debug
 		//System.out.println("ADD SCORE -> eval =  "+eval);
 		score += eval;
+		// Debug
 		//System.out.println("ADD SCORE -> score =  "+score);
 		++tries;
 		
